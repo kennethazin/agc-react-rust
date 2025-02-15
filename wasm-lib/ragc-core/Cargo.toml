@@ -1,0 +1,17 @@
+[package]
+name = "ragc-core"
+version = "0.1.0"
+authors = ["Felipe Vilas-Boas"]
+edition = "2018"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+log = "0.4"
+heapless = "0.7.7"
+
+[dev-dependencies]
+ragc-ropes = { path = "../ragc-ropes" }
+
+[features]
+default = []
+std = []
