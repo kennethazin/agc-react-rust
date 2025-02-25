@@ -1,92 +1,67 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import init, { AGC } from "wasm-lib";
+import { Suspense, useEffect, useRef } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { OrbitControls, Stars } from "@react-three/drei";
+import { Model } from "@/components/moon";
+import { Telemetry } from "@/components/Telemetry";
+import { Sun } from "@/components/Sun";
+import { Earth } from "@/components/Earth";
 
-function App() {
-  const [agc, setAgc] = useState(null);
-  const [altitude, setAltitude] = useState(0);
-  const [velocity, setVelocity] = useState(0);
-  const [fuel, setFuel] = useState(0);
-  const [throttle, setThrottle] = useState(0);
-  const [dskyDisplay, setDskyDisplay] = useState("Welcome");
-  const [dskyInputRegister, setDskyInputRegister] = useState("");
-  const [dskyInputValue, setDskyInputValue] = useState("");
+function CameraCollision({ moonRef }) {
+  const { camera } = useThree();
 
-  useEffect(() => {
-    init().then(() => {
-      setAgc(new AGC());
-    });
-  }, []);
+  useFrame(() => {
+    if (moonRef.current) {
+      const moonPosition = moonRef.current.position;
+      const cameraPosition = camera.position;
+      const distance = moonPosition.distanceTo(cameraPosition);
+      const minDistance = 1.5; // Minimum distance from the moon's surface
 
-  useEffect(() => {
-    if (!agc) return;
-
-    const interval = setInterval(() => {
-      agc.update(0.1); // Update every 100ms (0.1 seconds)
-      const state = JSON.parse(agc.get_state());
-      setAltitude(state.altitude);
-      setVelocity(state.velocity);
-      setFuel(state.fuel);
-      setDskyDisplay(state.dsky_display);
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, [agc]);
-
-  const handleThrottleChange = (event) => {
-    const newThrottle = parseFloat(event.target.value);
-    setThrottle(newThrottle);
-    if (agc) {
-      agc.set_throttle(newThrottle);
+      if (distance < minDistance) {
+        const direction = cameraPosition.clone().sub(moonPosition).normalize();
+        camera.position.copy(
+          moonPosition.clone().add(direction.multiplyScalar(minDistance))
+        );
+      }
     }
-  };
-  const handleDskyInput = () => {
-    if (agc) {
-      agc.dsky_input_set(dskyInputRegister, dskyInputValue);
-    }
-  };
+  });
 
-  return (
-    <div className="App">
-      <h1>Apollo Guidance Computer (AGC) Emulator</h1>
-      <div>Altitude: {altitude.toFixed(2)} meters</div>
-      <div>Velocity: {velocity.toFixed(2)} m/s</div>
-      <div>Fuel: {fuel.toFixed(2)}%</div>
-      <div>
-        <label>
-          Throttle:
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value={throttle}
-            onChange={handleThrottleChange}
-          />
-        </label>
-      </div>
-      <div>DSKY Display: {dskyDisplay}</div>
-      <div>
-        <label>
-          Register:
-          <input
-            type="text"
-            value={dskyInputRegister}
-            onChange={(e) => setDskyInputRegister(e.target.value)}
-          />
-        </label>
-        <label>
-          Value:
-          <input
-            type="text"
-            value={dskyInputValue}
-            onChange={(e) => setDskyInputValue(e.target.value)}
-          />
-        </label>
-        <button onClick={handleDskyInput}>Enter</button>
-      </div>
-    </div>
-  );
+  return null;
 }
 
-export default App;
+export default function App() {
+  const moonRef = useRef(null);
+
+  return (
+    <>
+      <Canvas
+        className="bg-black"
+        camera={{ fov: 75, near: 0.1, far: 1000, position: [0, 0, 3] }}
+      >
+        <Stars
+          radius={100}
+          depth={200}
+          count={10000}
+          factor={10}
+          saturation={1}
+          fade
+          speed={1}
+        />
+        <OrbitControls
+          autoRotate
+          rotateSpeed={0.5}
+          zoomSpeed={1}
+          autoRotateSpeed={0.1}
+        />
+        <Suspense fallback={null}>
+          <Model ref={moonRef} />
+          <Earth position={[100, 20, 300]} />
+          <Telemetry moonRef={moonRef} />
+          <CameraCollision moonRef={moonRef} />
+          <Sun position={[-80, 400, 800]} />
+        </Suspense>
+        <mesh />
+      </Canvas>
+    </>
+  );
+}
