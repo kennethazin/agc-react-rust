@@ -4,50 +4,87 @@ import init, { AGC } from "wasm-lib";
 
 function App() {
   const [agc, setAgc] = useState(null);
-  const [speed, setSpeed] = useState(0);
-  const [gravity, setGravity] = useState(0);
-  const [agcState, setAgcState] = useState("");
+  const [altitude, setAltitude] = useState(0);
+  const [velocity, setVelocity] = useState(0);
+  const [fuel, setFuel] = useState(0);
+  const [throttle, setThrottle] = useState(0);
+  const [dskyDisplay, setDskyDisplay] = useState("Welcome");
+  const [dskyInputRegister, setDskyInputRegister] = useState("");
+  const [dskyInputValue, setDskyInputValue] = useState("");
 
-  // Initialize WASM module
   useEffect(() => {
     init().then(() => {
       setAgc(new AGC());
     });
   }, []);
 
-  // Update AGC state
-  const updateAGC = () => {
+  useEffect(() => {
+    if (!agc) return;
+
+    const interval = setInterval(() => {
+      agc.update(0.1); // Update every 100ms (0.1 seconds)
+      const state = JSON.parse(agc.get_state());
+      setAltitude(state.altitude);
+      setVelocity(state.velocity);
+      setFuel(state.fuel);
+      setDskyDisplay(state.dsky_display);
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [agc]);
+
+  const handleThrottleChange = (event) => {
+    const newThrottle = parseFloat(event.target.value);
+    setThrottle(newThrottle);
     if (agc) {
-      agc.update(speed, gravity);
-      setAgcState(agc.get_state());
+      agc.set_throttle(newThrottle);
+    }
+  };
+  const handleDskyInput = () => {
+    if (agc) {
+      agc.dsky_input_set(dskyInputRegister, dskyInputValue);
     }
   };
 
   return (
     <div className="App">
       <h1>Apollo Guidance Computer (AGC) Emulator</h1>
+      <div>Altitude: {altitude.toFixed(2)} meters</div>
+      <div>Velocity: {velocity.toFixed(2)} m/s</div>
+      <div>Fuel: {fuel.toFixed(2)}%</div>
       <div>
         <label>
-          Speed:
+          Throttle:
           <input
-            type="number"
-            value={speed}
-            onChange={(e) => setSpeed(parseFloat(e.target.value))}
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={throttle}
+            onChange={handleThrottleChange}
           />
         </label>
       </div>
+      <div>DSKY Display: {dskyDisplay}</div>
       <div>
         <label>
-          Gravity:
+          Register:
           <input
-            type="number"
-            value={gravity}
-            onChange={(e) => setGravity(parseFloat(e.target.value))}
+            type="text"
+            value={dskyInputRegister}
+            onChange={(e) => setDskyInputRegister(e.target.value)}
           />
         </label>
+        <label>
+          Value:
+          <input
+            type="text"
+            value={dskyInputValue}
+            onChange={(e) => setDskyInputValue(e.target.value)}
+          />
+        </label>
+        <button onClick={handleDskyInput}>Enter</button>
       </div>
-      <button onClick={updateAGC}>Update AGC</button>
-      <pre>{agcState}</pre>
     </div>
   );
 }
