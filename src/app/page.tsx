@@ -75,9 +75,16 @@ export default function App() {
           <Suspense fallback={null}>
             <Model ref={moonRef} />
             <Earth position={[100, 20, 300]} />
-            <Telemetry moonRef={moonRef} setLanderOrbitRadius={setLanderOrbitRadius} />
+            <Telemetry
+              moonRef={moonRef}
+              setLanderOrbitRadius={setLanderOrbitRadius}
+            />
             <CameraFollow moonRef={moonRef} landerRef={landerRef} />
-            <LanderOrbit moonRef={moonRef} landerRef={landerRef} radius={landerOrbitRadius} />
+            <LanderOrbit
+              moonRef={moonRef}
+              landerRef={landerRef}
+              radius={landerOrbitRadius}
+            />
             <Sun position={[-80, 400, 800]} />
             <Lander ref={landerRef} />
           </Suspense>
