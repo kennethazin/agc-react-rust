@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useRef } from "react";
+import { Suspense, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Stars, OrbitControls } from "@react-three/drei";
 import { Model } from "@/components/moon";
@@ -7,9 +7,9 @@ import { Telemetry } from "@/components/Telemetry";
 import { Sun } from "@/components/Sun";
 import { Earth } from "@/components/Earth";
 import { Lander } from "@/components/Lander";
-import { DSKY } from "@/components/DSKY";
 import * as THREE from "three";
 import { ORBIT_SPEED } from "@/utils/constants";
+// import { DSKY } from "@/components/DSKY";
 
 function CameraFollow({ moonRef, landerRef }) {
   const { camera } = useThree();
@@ -34,11 +34,10 @@ function CameraFollow({ moonRef, landerRef }) {
   return null;
 }
 
-function LanderOrbit({ moonRef, landerRef }) {
+function LanderOrbit({ moonRef, landerRef, radius }) {
   useFrame(({ clock }) => {
     if (moonRef.current && landerRef.current) {
       const elapsedTime = clock.getElapsedTime();
-      const radius = 3; // can use this to change angle of camera?? 2 (wide), 3 (default) 5 (to show view from moon)
       const speed = ORBIT_SPEED;
       landerRef.current.position.x =
         moonRef.current.position.x + radius * Math.cos(speed * elapsedTime);
@@ -54,6 +53,7 @@ export default function App() {
   const moonRef = useRef(null);
   const landerRef = useRef(null);
   const agc = useRef(null); // Assuming agc is initialised elsewhere
+  const [landerOrbitRadius, setLanderOrbitRadius] = useState(3);
 
   return (
     <>
@@ -75,15 +75,15 @@ export default function App() {
           <Suspense fallback={null}>
             <Model ref={moonRef} />
             <Earth position={[100, 20, 300]} />
-            <Telemetry moonRef={moonRef} />
+            <Telemetry moonRef={moonRef} setLanderOrbitRadius={setLanderOrbitRadius} />
             <CameraFollow moonRef={moonRef} landerRef={landerRef} />
-            <LanderOrbit moonRef={moonRef} landerRef={landerRef} />
+            <LanderOrbit moonRef={moonRef} landerRef={landerRef} radius={landerOrbitRadius} />
             <Sun position={[-80, 400, 800]} />
             <Lander ref={landerRef} />
           </Suspense>
           <mesh />
         </Canvas>
-        <DSKY agc={agc.current} />
+        {/* <DSKY agc={agc.current} /> */}
       </div>
     </>
   );
