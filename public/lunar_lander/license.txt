@@ -1,0 +1,11 @@
+Model Information:
+* title:	Lunar lander
+* source:	https://sketchfab.com/3d-models/lunar-lander-de828ca7080c492b8e1f6ceab4577369
+* author:	e (https://sketchfab.com/melanie.2.10.90)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Lunar lander" (https://sketchfab.com/3d-models/lunar-lander-de828ca7080c492b8e1f6ceab4577369) by e (https://sketchfab.com/melanie.2.10.90) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

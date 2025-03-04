@@ -12,13 +12,10 @@ import { useGLTF } from "@react-three/drei";
 import { Sphere } from "@react-three/drei";
 
 export function Model(props) {
-  const { camera } = useThree();
-  camera.position.set(0, 0, 3);
-  camera.lookAt(100, 30, 400);
   const { nodes, materials } = useGLTF("moon/scene.gltf");
   return (
-    <group {...props} dispose={null}>
-      <group rotation={[-Math.PI / 2, 0, 0]}>
+    <group {...props} dispose={null} scale={2}>
+      <group rotation={[-Math.PI / 2, 3, 0]}>
         <Sphere args={[1, 100, 100]}>
           <meshStandardMaterial
             attach="material"
