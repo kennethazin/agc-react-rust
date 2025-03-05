@@ -25,7 +25,7 @@ function CameraFollow({ moonRef, landerRef }) {
         moonRef.current.position.x + radius * Math.cos(speed * elapsedTime);
       camera.position.z =
         moonRef.current.position.z + radius * Math.sin(speed * elapsedTime);
-      camera.position.y = landerPosition.y + -0.4; // Adjust height as needed
+      camera.position.y = landerPosition.y + -0.4;
 
       camera.lookAt(landerPosition);
     }
@@ -39,10 +39,17 @@ function LanderOrbit({ moonRef, landerRef, radius }) {
     if (moonRef.current && landerRef.current) {
       const elapsedTime = clock.getElapsedTime();
       const speed = ORBIT_SPEED;
+      const moonPosition = moonRef.current.position;
+
       landerRef.current.position.x =
         moonRef.current.position.x + radius * Math.cos(speed * elapsedTime);
       landerRef.current.position.z =
         moonRef.current.position.z + radius * Math.sin(speed * elapsedTime);
+
+      // Rotate towards the moon during descent stage
+      if (landerRef.current.position.y < 1) {
+        landerRef.current.lookAt(moonPosition);
+      }
     }
   });
 
@@ -78,6 +85,7 @@ export default function App() {
             <Telemetry
               moonRef={moonRef}
               setLanderOrbitRadius={setLanderOrbitRadius}
+              landerRef={landerRef}
             />
             <CameraFollow moonRef={moonRef} landerRef={landerRef} />
             <LanderOrbit
