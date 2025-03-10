@@ -5,7 +5,7 @@ interface DSKYStatusPanelProps {
   children?: React.ReactNode;
   className?: string;
   isActive?: boolean;
-  label?: string; // Keep as string
+  label?: string;
 }
 
 const DSKYStatusPanel: React.FC<DSKYStatusPanelProps> = ({
@@ -16,12 +16,14 @@ const DSKYStatusPanel: React.FC<DSKYStatusPanelProps> = ({
   ...props
 }) => {
   return (
-    <div className="relative flex items-center justify-center">
-      {isActive && <div className="absolute  bg-orange-200 opacity-80 " />}
+    <div className="relative flex items-center justify-center ">
+      {isActive && (
+        <div className="absolute w-10 h-10 bg-green-500 p-5  rounded-sm" />
+      )}
       <div
         className={cn(
           "relative whitespace-pre-line z-10 h-full w-full font-semibold tracking-tight text-black uppercase flex flex-col items-center justify-center rounded-sm ",
-          isActive && "bg-green-700",
+
           className
         )}
         {...props}
