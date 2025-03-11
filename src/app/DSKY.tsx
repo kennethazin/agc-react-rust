@@ -1,11 +1,12 @@
 import React from "react";
 import DSKYButton from "./components/DSKYButton";
 import DSKYStatusPanel from "./components/DSKYStatusPanel";
-import DSKYNumericPanel from "./components/DSKYNumericPanel";
+import DSKYLedIndicator from "./components/DSKYLedIndicator";
+import Display from "./components/seven-segment-display";
 
 const DSKY = () => {
   return (
-    <div className="bg-gray-200 w-[350px] h-[470px] p-1 flex flex-col text-center font-mono rounded-sm ">
+    <div className="bg-gray-200 w-[350px] h-[470px] p-1 flex flex-col text-center font-mono rounded-sm">
       <div className="flex flex-row justify-evenly m-2 h-3/5 mx-4 gap-2 ">
         <div className="w-full h-full  border-[0.1rem] border-neutral-600  rounded-lg   ">
           <div className="w-full h-full mx-0 grid grid-cols-2 grid-rows-7 gap-1 rounded-md border-[0.3rem]  border-neutral-400 p-0.5 shadow-[inset_4px_-2px_5px_rgba(4,4,0,0.5)]  ">
@@ -24,38 +25,73 @@ const DSKY = () => {
         <div className="w-full h-full border-[0.1rem] border-neutral-600  rounded-lg bg-black  ">
           <div className="relative w-full h-full mx-0  rounded-md border-[0.3rem]    border-neutral-400 p-0.5 shadow-[inset_4px_-2px_5px_rgba(4,4,0,0.5)]  bg-green-950/30   ">
             <div className="grid mb-1">
-              <div className="text-xs uppercase  flex flex-row justify-between items-center ">
-                <div className="  bg-green-400 w-2/5 h-full flex flex-col items-center justify-center rounded-sm  ">
+              <div className="text-xs uppercase flex flex-row justify-between items-center">
+                <div className="bg-green-600 w-2/5 h-full flex flex-col items-center justify-center rounded-sm">
                   <div>comp</div>
                   <div>acty</div>
                 </div>
-                <div className="flex flex-col items-end   w-2/5 ">
-                  <div className="bg-green-400 w-full rounded-sm text-xs">
-                    prog
-                  </div>
-                  <div className="text-5xl ds-digital text-green-400">00</div>
+                <div className="flex flex-col items-end w-2/5">
+                  <DSKYLedIndicator
+                    label="prog"
+                    isActive={false}
+                    width="w-full"
+                  />
+                  <Display
+                    value="00000"
+                    color="green"
+                    digitCount={2}
+                    className="relative scale-75 top-0.5"
+                    showPlusSign={false}
+                  />
                 </div>
               </div>
             </div>
-            <div className=" flex flex-row justify-between ">
-              <div className=" bg-green-400 w-2/5 text-xs h-fit rounded-sm ">
-                Verb
-              </div>
-              <div className=" bg-green-400 w-2/5 text-xs h-fit rounded-sm">
-                Verb
-              </div>
+            <div className="flex flex-row justify-between">
+              <DSKYLedIndicator label="Verb" isActive={false} />
+              <DSKYLedIndicator label="Noun" isActive={false} />
             </div>
-            <div className="flex flex-row justify-between items-center">
-              <div className="text-5xl ds-digital text-green-400">00</div>
-              <div className="text-5xl ds-digital text-green-400">00</div>
+            <div className="flex flex-row justify-between items-center ">
+              <Display
+                value="124"
+                color="green"
+                digitCount={2}
+                className="relative scale-75 top-0.5 w-2/5"
+                showPlusSign={false}
+              />
+              <Display
+                value="00000"
+                color="green"
+                digitCount={2}
+                className=" relative scale-75 top-0.5 w-2/5"
+                showPlusSign={false}
+              />{" "}
             </div>
             <div className="flex flex-col space-y-[-3px]">
               <div className="bg-green-300 h-[1px]" />
-              <div className="text-5xl ds-digital text-green-400">+00000</div>
+              <Display
+                value="00000"
+                color="green"
+                digitCount={5}
+                className="scale-75 relative top-0.2"
+                showPlusSign={true}
+              />
               <div className="bg-green-300 h-[1px]" />
-              <div className="text-5xl ds-digital text-green-400">+00000</div>
+              <Display
+                value="00000"
+                color="green"
+                digitCount={5}
+                className="scale-75 relative top-0.2"
+                showPlusSign={true}
+              />
               <div className="bg-green-300 h-[1px]" />
-              <div className="text-5xl ds-digital text-green-400">+00000</div>
+
+              <Display
+                value="00000"
+                color="green"
+                digitCount={5}
+                className="scale-75 relative top-0.5"
+                showPlusSign={true}
+              />
             </div>
           </div>
         </div>

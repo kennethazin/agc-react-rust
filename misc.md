@@ -10,3 +10,5 @@
 </div>
 </div>
 ```
+
+seven segment display adapted from https://github.com/stejsoftware/seven-segment-display
