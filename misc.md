@@ -12,3 +12,5 @@
 ```
 
 seven segment display adapted from https://github.com/stejsoftware/seven-segment-display
+
+https://github.com/felipevb/ragc/blob/master/ragc-periph/src/vagc/dsky.rs TRANSLATE DSKY LOGIC

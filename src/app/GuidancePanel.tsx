@@ -17,7 +17,7 @@ const GuidancePanel = () => {
         pitch: 15 * Math.sin(Date.now() / 5000),
         yaw: (prev.yaw + 0.5) % 360,
       }));
-    }, 50);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, []);
