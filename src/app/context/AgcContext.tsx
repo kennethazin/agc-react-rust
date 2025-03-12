@@ -63,6 +63,10 @@ const AgcContext = createContext<AgcContextType>({
   reconnect: () => {},
 });
 
+// TODO can only continue once the RUST emulation can succesffuly use the ROM.
+
 // helper to parse binary data from the AGC
 
 // helper to create binary packet to the AGC
+
+
