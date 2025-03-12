@@ -68,5 +68,3 @@ const AgcContext = createContext<AgcContextType>({
 // helper to parse binary data from the AGC
 
 // helper to create binary packet to the AGC
-
-
