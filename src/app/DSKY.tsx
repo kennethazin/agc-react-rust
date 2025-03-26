@@ -2,7 +2,7 @@ import React from "react";
 import DSKYButton from "./components/DSKYButton";
 import DSKYStatusPanel from "./components/DSKYStatusPanel";
 import DSKYLedIndicator from "./components/DSKYLedIndicator";
-import Display from "./components/seven-segment-display";
+import Display from "./components/display";
 
 const DSKY = () => {
   return (
