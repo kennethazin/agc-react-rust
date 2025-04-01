@@ -1,0 +1,68 @@
+[
+  {
+    "name": "Sun",
+    "radius": 432000,
+    "distance": 0,
+    "period": 1,
+    "daylength": 600,
+    "type": "star",
+    "tilt": 0,
+    "traversable": true,
+    "textures": {
+      "map": "/textures/sun.jpg"
+    }
+  },
+
+  {
+    "name": "Earth",
+    "radius": 3959,
+    "distance": 152,
+    "period": 365,
+    "daylength": 24,
+    "type": "planet",
+    "orbits": "Sun",
+    "tilt": 23.44,
+    "traversable": false,
+    "textures": {
+      "map": "./textures/earth.jpg",
+      "bump": "./textures/earth-bump.jpg",
+      "specular": "./textures/earth-specular.jpg",
+      "atmosphere": "./textures/earth-clouds.jpg",
+      "atmosphereAlpha": "./textures/earth-clouds-alpha.jpg"
+    }
+  },
+  {
+    "name": "Moon",
+    "radius": 1737,
+    "distance": 0.38,
+    "period": 0,
+    "daylength": -28,
+    "type": "moon",
+    "orbits": "Earth",
+    "tilt": 5.8,
+    "traversable": true,
+    "offset": -1.57,
+    "textures": {
+      "map": "./textures/moon.jpg",
+      "bump": "./textures/moon-bump.jpg"
+    }
+  },
+  {
+    "name": "Lunar Module",
+    "radius": 0.3,
+    "distance": 0.007,
+    "period": 1.5,
+    "daylength": 999999,
+    "type": "spacecraft",
+    "orbits": "Moon",
+    "tilt": -1.57,
+    "traversable": true,
+    "offset": 0,
+    "model": "./models/lunar/lunarmodule.gltf",
+    "scale": 0.00001,
+
+    "textures": {
+      "map": "./textures/moon.jpg"
+    }
+  }
+]
