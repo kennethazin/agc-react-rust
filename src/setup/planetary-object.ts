@@ -17,6 +17,9 @@ export interface Body {
   offset?: number;
   model?: string;
   scale?: number;
+  hasGravity?: boolean;
+  gravityRadius?: number;
+  gravityStrength?: number;
 }
 
 interface TexturePaths {
@@ -63,9 +66,20 @@ export class PlanetaryObject {
   atmosphere: Atmosphere = {};
   modelPath?: string;
   modelScale?: number;
+  name: string;
+  hasGravity: boolean;
+  gravityRadius: number;
+  gravityStrength: number;
+  gravityAffected: boolean = false;
+  lastPosition: THREE.Vector3 = new THREE.Vector3();
+  pathPoints: THREE.Vector3[] = [];
+  pathUpdateTimer: number = 0;
+  gravityVisual?: THREE.Mesh;
+  showGravityField: boolean = false;
 
   constructor(body: Body) {
     const {
+      name,
       radius,
       distance,
       period,
@@ -75,8 +89,12 @@ export class PlanetaryObject {
       tilt,
       model,
       scale,
+      hasGravity,
+      gravityRadius,
+      gravityStrength,
     } = body;
 
+    this.name = name;
     this.radius = normaliseRadius(radius);
     this.distance = normaliseDistance(distance);
     this.period = period;
@@ -87,6 +105,9 @@ export class PlanetaryObject {
     this.rng = body.offset ?? Math.random() * 2 * Math.PI;
     this.modelPath = model;
     this.modelScale = scale;
+    this.hasGravity = hasGravity || false;
+    this.gravityRadius = gravityRadius || 0.05;
+    this.gravityStrength = gravityStrength || 0.002;
 
     this.loadTextures(body.textures);
 
@@ -104,6 +125,11 @@ export class PlanetaryObject {
 
     if (this.atmosphere.map && !this.modelPath) {
       this.mesh.add(this.createAtmosphereMesh());
+    }
+
+    // Create gravity visualization for bodies with gravity
+    if (this.hasGravity) {
+      this.createGravityVisual();
     }
   }
 
@@ -209,20 +235,69 @@ export class PlanetaryObject {
   };
 
   tick = (elapsedTime: number) => {
+    // Get the simulation speed from options
+    const simulationSpeed = window.options?.speed || 0;
+
     // Convert real-time seconds to rotation.
     const rotation = this.getRotation(elapsedTime);
     const orbitRotation = this.getOrbitRotation(elapsedTime);
     const orbit = orbitRotation + this.rng;
 
-    // Circular rotation around orbit.
-    this.mesh.position.x = Math.sin(orbit) * this.distance;
-    this.mesh.position.z = Math.cos(orbit) * this.distance;
+    // Only update orbital position if speed is not zero
+    if (simulationSpeed > 0) {
+      // Circular rotation around orbit.
+      this.mesh.position.x = Math.sin(orbit) * this.distance;
+      this.mesh.position.z = Math.cos(orbit) * this.distance;
 
-    if (this.type === "ring") {
-      this.mesh.rotation.z = rotation;
-    } else {
-      this.mesh.rotation.y = rotation;
+      if (this.type === "ring") {
+        this.mesh.rotation.z = rotation;
+      } else {
+        this.mesh.rotation.y = rotation;
+      }
     }
+
+    // Apply gravitational influence to nearby objects only if simulation is running
+    if (this.hasGravity && window.solarSystem && simulationSpeed > 0) {
+      for (const objName in window.solarSystem) {
+        const obj = window.solarSystem[objName];
+        if (obj.name !== this.name && obj.type === "spacecraft") {
+          // Get world positions for both objects
+          const bodyWorldPos = new THREE.Vector3();
+          const targetWorldPos = new THREE.Vector3();
+          this.mesh.getWorldPosition(bodyWorldPos);
+          obj.mesh.getWorldPosition(targetWorldPos);
+
+          const distance = bodyWorldPos.distanceTo(targetWorldPos);
+
+          // Apply gravity if within gravity radius
+          if (distance < this.gravityRadius) {
+            // Calculate local space direction
+            const direction = new THREE.Vector3()
+              .subVectors(bodyWorldPos, targetWorldPos)
+              .normalize();
+            const force = this.calculateGravityForce(distance);
+
+            // Apply force based on simulation speed
+            const localForce = force * 0.016 * simulationSpeed; // Scale by simulation speed
+
+            // Apply force in object's local space
+            obj.mesh.position.x += direction.x * localForce;
+            obj.mesh.position.y += direction.y * localForce;
+            obj.mesh.position.z += direction.z * localForce;
+
+            // Mark object as gravity affected for path updates
+            obj.gravityAffected = true;
+          }
+        }
+      }
+    }
+  };
+
+  // Calculate gravity force based on distance (inverse square law)
+  calculateGravityForce = (distance: number): number => {
+    // Prevent division by zero and extreme forces when very close
+    const safeDistance = Math.max(distance, 0.001);
+    return this.gravityStrength / (safeDistance * safeDistance);
   };
 
   getMinDistance = (): number => {
@@ -231,4 +306,27 @@ export class PlanetaryObject {
     }
     return this.radius * 3.5;
   };
+
+  // Create a visual representation of the gravity field
+  private createGravityVisual() {
+    const geometry = new THREE.SphereGeometry(this.gravityRadius, 32, 32);
+    const material = new THREE.MeshBasicMaterial({
+      color: 0x4287f5,
+      transparent: true,
+      opacity: 0.1,
+      wireframe: true,
+    });
+
+    this.gravityVisual = new THREE.Mesh(geometry, material);
+    this.gravityVisual.visible = this.showGravityField;
+    this.mesh.add(this.gravityVisual);
+  }
+
+  // Toggle gravity field visualization
+  toggleGravityVisual(show: boolean) {
+    this.showGravityField = show;
+    if (this.gravityVisual) {
+      this.gravityVisual.visible = show;
+    }
+  }
 }

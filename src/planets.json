@@ -42,6 +42,9 @@
     "tilt": 5.8,
     "traversable": true,
     "offset": -1.57,
+    "hasGravity": true,
+    "gravityRadius": 0.17,
+    "gravityStrength": 0.002,
     "textures": {
       "map": "./textures/moon.jpg",
       "bump": "./textures/moon-bump.jpg"

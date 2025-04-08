@@ -13,9 +13,13 @@ interface CelestialBodyProps {
   orbitSpeed?: number;
   rotationSpeed?: number;
   isSun?: boolean;
+  hasGravity?: boolean;
+  gravityRadius?: number;
+  gravityStrength?: number;
 }
 
 const CelestialBody = ({
+  name,
   position,
   rotation,
   scale,
@@ -24,6 +28,9 @@ const CelestialBody = ({
   orbitSpeed = 0,
   rotationSpeed = 0,
   isSun = false,
+  hasGravity = false,
+  gravityRadius = 5,
+  gravityStrength = 0.1,
 }: CelestialBodyProps) => {
   const meshRef = useRef<THREE.Mesh>(null);
   const texture = useTexture(texturePath);
@@ -40,7 +47,42 @@ const CelestialBody = ({
       meshRef.current.position.x = Math.cos(angle) * orbitRadius;
       meshRef.current.position.z = Math.sin(angle) * orbitRadius;
     }
+
+    // Apply gravitational influence to nearby objects
+    if (hasGravity && window.solarSystem) {
+      for (const objName in window.solarSystem) {
+        const obj = window.solarSystem[objName];
+        if (obj.name !== name && obj.type === "spacecraft") {
+          const targetPos = new THREE.Vector3().copy(obj.mesh.position);
+          const bodyPos = new THREE.Vector3().copy(meshRef.current.position);
+          const distance = bodyPos.distanceTo(targetPos);
+
+          // Apply gravity if within gravity radius
+          if (distance < gravityRadius) {
+            const force = calculateGravityForce(distance, gravityStrength);
+            const direction = new THREE.Vector3()
+              .subVectors(bodyPos, targetPos)
+              .normalize();
+
+            // Apply gravitational pull
+            obj.mesh.position.x += direction.x * force * delta;
+            obj.mesh.position.y += direction.y * force * delta;
+            obj.mesh.position.z += direction.z * force * delta;
+          }
+        }
+      }
+    }
   });
+
+  // Calculate gravity force based on distance (inverse square law)
+  const calculateGravityForce = (
+    distance: number,
+    strength: number
+  ): number => {
+    // Prevent division by zero and extreme forces when very close
+    const safeDistance = Math.max(distance, 0.1);
+    return strength / (safeDistance * safeDistance);
+  };
 
   return (
     <mesh
@@ -49,6 +91,7 @@ const CelestialBody = ({
       rotation={rotation}
       castShadow={!isSun}
       receiveShadow={!isSun}
+      name={name}
     >
       <sphereGeometry args={[scale, 1024, 1024]} />
       <meshStandardMaterial

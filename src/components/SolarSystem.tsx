@@ -13,6 +13,12 @@ import { createGUI, options } from "@/setup/gui";
 
 import "@/styles/SolarSystem.css";
 
+declare global {
+  interface Window {
+    solarSystem: Record<string, any>;
+  }
+}
+
 const SolarSystem = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -178,50 +184,6 @@ const SolarSystem = () => {
       )}
 
       <canvas ref={canvasRef} className="webgl"></canvas>
-
-      <div className="btn-group">
-        <button id="btn-ambient">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-          >
-            <g>
-              <path d="M12 24a12 12 0 1 1 12-12 12.013 12.013 0 0 1-12 12zm0-22a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2z" />
-              <path d="M12 16a4 4 0 1 1 4-4 4 4 0 0 1-4 4zm0-6a2 2 0 1 0 2 2 2 2 0 0 0-2-2zM11 5h2v2h-2zM11 17h2v2h-2zM17 11h2v2h-2zM5 11h2v2H5zM6 7h2v2H6zM16 7h2v2h-2zM6 15h2v2H6zM16 15h2v2h-2z" />
-            </g>
-          </svg>
-        </button>
-        <button id="btn-paths">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-          >
-            <g>
-              <path d="M12 24a12 12 0 1 1 12-12 12.013 12.013 0 0 1-12 12zm0-22a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2z" />
-              <path d="m7.091 16.91 1.964-7.856 7.854-1.964-1.964 7.856zM10.7 10.7l-.864 3.457L13.3 13.3l.864-3.457z" />
-              <path d="m9.171 10.586 1.414-1.414 4.242 4.242-1.414 1.414z" />
-            </g>
-          </svg>
-        </button>
-        <button id="btn-settings">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-          >
-            <g>
-              <path d="M12 24a12 12 0 1 1 12-12 12.013 12.013 0 0 1-12 12zm0-22a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2z" />
-              <path d="M12 17a5 5 0 1 1 5-5 5.006 5.006 0 0 1-5 5zm0-8a3 3 0 1 0 3 3 3 3 0 0 0-3-3z" />
-              <path d="M11 5h2v3h-2zM11 16h2v3h-2zM16 11h3v2h-3zM5 11h3v2H5zM14.293 8.293l2-2 1.414 1.414-2 2zM6.293 7.707l1.414-1.414 2 2-1.415 1.414zM6.293 16.293l2-2 1.414 1.414-2 2zM14.293 15.707l1.415-1.414 2 2-1.415 1.414z" />
-            </g>
-          </svg>
-        </button>
-      </div>
     </div>
   );
 };

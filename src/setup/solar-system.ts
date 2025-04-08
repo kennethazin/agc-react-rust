@@ -7,6 +7,12 @@ import * as THREE from "three";
 declare global {
   interface Window {
     solarSystem?: Record<string, PlanetaryObject>;
+    options?: {
+      speed: number;
+      showPaths: boolean;
+      showGravityFields: boolean;
+      ambientLight: number;
+    };
   }
 }
 
