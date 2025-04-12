@@ -6,7 +6,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/Addons.js";
 import { UnrealBloomPass } from "three/examples/jsm/Addons.js";
-import { createEnvironmentMap } from "@/setup/environment-map";
+
 import { createLights } from "@/setup/lights";
 import { createSolarSystem } from "@/setup/solar-system";
 import { createGUI, options } from "@/setup/gui";
@@ -35,7 +35,19 @@ const SolarSystem = () => {
     const scene = new THREE.Scene();
 
     // Environment map
-    scene.background = createEnvironmentMap("./textures/environment");
+    const loader = new THREE.TextureLoader();
+    const environmentMap = loader.load("/starmap_8k.jpg");
+
+    // Create a sphere geometry for the star map
+    const starGeometry = new THREE.SphereGeometry(5000, 64, 64); // Large radius for distant stars
+    const starMaterial = new THREE.MeshBasicMaterial({
+      map: environmentMap,
+      side: THREE.BackSide, // Render inside of the sphere
+      color: new THREE.Color(0x555555), // Slightly brighter color for the star map
+    });
+
+    const starSphere = new THREE.Mesh(starGeometry, starMaterial);
+    scene.add(starSphere);
 
     // Lights
     const [ambientLight, pointLight] = createLights();
